@@ -35,39 +35,46 @@ async function generateSummary(repoOwner, repoName) {
   if (!repoOwner || !repoName) {
     summaryDiv.innerHTML = `<p>Invalid owner and/or repository name</p>`;
   } else {
-    let repoUrl = `https://github.com/${repoOwner}/${repoName}`;
-    const releases = await getReleasesData(repoOwner, repoName, 50);
+    try {
+      let repoUrl = `https://github.com/${repoOwner}/${repoName}`;
+      const releases = await getReleasesData(repoOwner, repoName, 50);
+      if (releases && releases.length > 0) {
+        let totalDownloads = 0;
+        let numberReleases = 0;
+        let latestRelease;
+        let latestStableRelease;
+        releases.forEach((data) => {
+          numberReleases++;
+          totalDownloads += data.downloads;
+          if (!latestRelease) {
+            latestRelease = data;
+          }
+          if (!latestStableRelease) {
+            if (!data.prerelease) {
+              latestStableRelease = data;
+            }
+          }
+        });
 
-    let totalDownloads = 0;
-    let numberReleases = 0;
-    let latestRelease;
-    let latestStableRelease;
-    releases.forEach((data) => {
-      numberReleases++;
-      totalDownloads += data.downloads;
-      if (!latestRelease) {
-        latestRelease = data;
-      }
-      if (!latestStableRelease) {
-        if (!data.prerelease) {
-          latestStableRelease = data;
+        summaryDiv.innerHTML = `<h1>Releases Summary</h1>`;
+        summaryDiv.innerHTML += `<p>Url: ${repoUrl}/releases</p>`;
+        summaryDiv.innerHTML += `<p>Number of Releases: ${numberReleases}</p>`;
+        summaryDiv.innerHTML += `<p>Total Downloads: ${totalDownloads}</p>`;
+        if (latestRelease) {
+          showReleaseData("Latest Release:", latestRelease, summaryDiv);
         }
+        if (latestStableRelease) {
+          showReleaseData(
+            "Latest Stable Release:",
+            latestStableRelease,
+            summaryDiv
+          );
+        }
+      } else {
+        summaryDiv.innerHTML = `<p>Couldn't get any release data for the provided repository.</p>`;
       }
-    });
-
-    summaryDiv.innerHTML = `<h1>Releases Summary</h1>`;
-    summaryDiv.innerHTML += `<p>Url: ${repoUrl}/releases</p>`;
-    summaryDiv.innerHTML += `<p>Number of Releases: ${numberReleases}</p>`;
-    summaryDiv.innerHTML += `<p>Total Downloads: ${totalDownloads}</p>`;
-    if (latestRelease) {
-      showReleaseData("Latest Release:", latestRelease, summaryDiv);
-    }
-    if (latestStableRelease) {
-      showReleaseData(
-        "Latest Stable Release:",
-        latestStableRelease,
-        summaryDiv
-      );
+    } catch (error) {
+      summaryDiv.innerHTML = `<p>Couldn't get any data, an error occurred.</p>`;
     }
   }
 }
@@ -88,9 +95,16 @@ async function getReleasesData(repoOwner, repoName, perPage) {
     let getNextPage = true;
 
     while (getNextPage) {
-      const response = await axios.get(nextPageUrl);
-      console.log(response);
+      const response = await axios.get(nextPageUrl).catch(function (error) {
+        if (error.response && error.response.status === 404) {
+          //console.clear();
+          return undefined;
+        }
+        //console.log(error.toJSON());
+      });
+
       if (response.data) {
+        console.log(response);
         response.data.forEach((releaseData) => {
           const relaseSummary = {};
           relaseSummary.name = releaseData.name;
@@ -116,7 +130,7 @@ async function getReleasesData(repoOwner, repoName, perPage) {
 
     return releases;
   } catch (error) {
-    console.error(error);
+    return undefined;
   }
 }
 
@@ -126,3 +140,4 @@ async function getReleasesData(repoOwner, repoName, perPage) {
 // https://axios-http.com/docs/example
 // https://docs.github.com/en/rest/using-the-rest-api/using-pagination-in-the-rest-api?apiVersion=2022-11-28#example-creating-a-pagination-method
 // https://www.sitepoint.com/get-url-parameters-with-javascript/
+// https://axios-http.com/docs/handling_errors
