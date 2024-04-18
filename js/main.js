@@ -3,7 +3,6 @@ import axios from "../libs/axios/axios.min.js";
 init();
 
 function init() {
-  // ref: https://www.sitepoint.com/get-url-parameters-with-javascript/
   const urlParams = new URLSearchParams(window.location.search);
   const urlOwner = urlParams.get("owner");
   const urlName = urlParams.get("name");
@@ -76,11 +75,6 @@ function showReleaseData(title, data, div) {
 
 async function getReleasesData(repoOwner, repoName, perPage) {
   try {
-    // ref: https://docs.github.com/en/rest/using-the-rest-api/using-pagination-in-the-rest-api?apiVersion=2022-11-28
-    // ref: https://docs.github.com/en/rest/using-the-rest-api/getting-started-with-the-rest-api?tool=javascript&apiVersion=2022-11-28
-    // ref: https://axios-http.com/docs/example
-    // ref: https://docs.github.com/en/rest/using-the-rest-api/using-pagination-in-the-rest-api?apiVersion=2022-11-28#example-creating-a-pagination-method
-
     let releases = [];
     let nextPageUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/releases?per_page=${perPage}`;
     const nextPagePattern = /(?<=<)([\S]*)(?=>; rel="Next")/i;
@@ -118,3 +112,10 @@ async function getReleasesData(repoOwner, repoName, perPage) {
     console.error(error);
   }
 }
+
+// references:
+// https://docs.github.com/en/rest/using-the-rest-api/using-pagination-in-the-rest-api?apiVersion=2022-11-28
+// https://docs.github.com/en/rest/using-the-rest-api/getting-started-with-the-rest-api?tool=javascript&apiVersion=2022-11-28
+// https://axios-http.com/docs/example
+// https://docs.github.com/en/rest/using-the-rest-api/using-pagination-in-the-rest-api?apiVersion=2022-11-28#example-creating-a-pagination-method
+// https://www.sitepoint.com/get-url-parameters-with-javascript/
