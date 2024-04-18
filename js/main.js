@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright 2024 Álvaro García
+ * www.binarynonsense.com
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
 import axios from "../libs/axios/axios.min.js";
 
 init();
