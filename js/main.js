@@ -76,6 +76,7 @@ async function generateSummary(repoOwner, repoName) {
       }
     } catch (error) {
       summaryDiv.innerHTML = `<p>Couldn't get any data, an error occurred.</p>`;
+      console.error(error);
     }
   }
 }
