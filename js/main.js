@@ -36,6 +36,7 @@ async function generateSummary(repoOwner, repoName) {
     summaryDiv.innerHTML = `<p>Invalid owner and/or repository name</p>`;
   } else {
     try {
+      // fetch data
       let repoUrl = `https://github.com/${repoOwner}/${repoName}`;
       const releases = await getReleasesData(repoOwner, repoName, 50);
       if (releases && releases.length > 0) {
@@ -45,7 +46,7 @@ async function generateSummary(repoOwner, repoName) {
         let latestStableRelease;
         releases.forEach((data) => {
           numberReleases++;
-          totalDownloads += data.downloads;
+          totalDownloads += data.total_downloads;
           if (!latestRelease) {
             latestRelease = data;
           }
@@ -55,7 +56,7 @@ async function generateSummary(repoOwner, repoName) {
             }
           }
         });
-
+        // build html
         summaryDiv.innerHTML = `<h1>Releases Summary</h1>`;
         summaryDiv.innerHTML += `<p>Url: ${repoUrl}/releases</p>`;
         summaryDiv.innerHTML += `<p>Number of Releases: ${numberReleases}</p>`;
@@ -81,10 +82,10 @@ async function generateSummary(repoOwner, repoName) {
 
 function showReleaseData(title, data, div) {
   div.innerHTML += `<h2>${title}</h2>`;
-  div.innerHTML += `<p>Url: ${data.url}</p>`;
+  div.innerHTML += `<p>Url: ${data.html_url}</p>`;
   div.innerHTML += `<p>Name: ${data.name}</p>`;
-  div.innerHTML += `<p>Tag: ${data.tag}</p>`;
-  div.innerHTML += `<p>Downloads: ${data.downloads}</p>`;
+  div.innerHTML += `<p>Tag: ${data.tag_name}</p>`;
+  div.innerHTML += `<p>Downloads: ${data.total_downloads}</p>`;
 }
 
 async function getReleasesData(repoOwner, repoName, perPage) {
@@ -106,18 +107,14 @@ async function getReleasesData(repoOwner, repoName, perPage) {
       if (response.data) {
         console.log(response);
         response.data.forEach((releaseData) => {
-          const relaseSummary = {};
-          relaseSummary.name = releaseData.name;
-          relaseSummary.tag = releaseData.tag_name;
-          relaseSummary.url = releaseData.html_url;
-          relaseSummary.downloads = 0;
+          releaseData.total_downloads = 0;
           if (releaseData.assets) {
             releaseData.assets.forEach((element) => {
               if (element.download_count)
-                relaseSummary.downloads += element.download_count;
+                releaseData.total_downloads += element.download_count;
             });
           }
-          releases.push(relaseSummary);
+          releases.push(releaseData);
         });
       }
       // more pages?
