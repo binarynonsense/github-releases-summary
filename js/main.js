@@ -31,14 +31,14 @@ function init() {
 }
 
 async function generateSummary(repoOwner, repoName) {
-  const summaryDiv = document.getElementById("summary");
+  const summaryDiv = document.querySelector("#summary");
   if (!repoOwner || !repoName) {
     summaryDiv.innerHTML = `<p>Invalid owner and/or repository name</p>`;
   } else {
     try {
       // fetch data
       let repoUrl = `https://github.com/${repoOwner}/${repoName}`;
-      const releases = await getReleasesData(repoOwner, repoName, 50);
+      const releases = await fetchReleasesData(repoOwner, repoName, 50);
       if (releases && releases.length > 0) {
         let totalDownloads = 0;
         let numberReleases = 0;
@@ -62,14 +62,14 @@ async function generateSummary(repoOwner, repoName) {
         summaryDiv.innerHTML += `<p>Number of Releases: ${numberReleases}</p>`;
         summaryDiv.innerHTML += `<p>Total Downloads: ${totalDownloads}</p>`;
         if (latestRelease) {
-          showReleaseData("Latest Release:", latestRelease, summaryDiv);
+          summaryDiv.innerHTML += `<h2>"Latest Release:"</h2>`;
+          const releaseDiv = getReleaseDiv(latestRelease);
+          summaryDiv.appendChild(releaseDiv);
         }
         if (latestStableRelease) {
-          showReleaseData(
-            "Latest Stable Release:",
-            latestStableRelease,
-            summaryDiv
-          );
+          summaryDiv.innerHTML += `<h2>"Latest Stable Release:"</h2>`;
+          const releaseDiv = getReleaseDiv(latestStableRelease);
+          summaryDiv.appendChild(releaseDiv);
         }
       } else {
         summaryDiv.innerHTML = `<p>Couldn't get any release data for the provided repository.</p>`;
@@ -80,15 +80,16 @@ async function generateSummary(repoOwner, repoName) {
   }
 }
 
-function showReleaseData(title, data, div) {
-  div.innerHTML += `<h2>${title}</h2>`;
+function getReleaseDiv(data) {
+  const div = document.createElement("div");
   div.innerHTML += `<p>Url: ${data.html_url}</p>`;
   div.innerHTML += `<p>Name: ${data.name}</p>`;
   div.innerHTML += `<p>Tag: ${data.tag_name}</p>`;
   div.innerHTML += `<p>Downloads: ${data.total_downloads}</p>`;
+  return div;
 }
 
-async function getReleasesData(repoOwner, repoName, perPage) {
+async function fetchReleasesData(repoOwner, repoName, perPage) {
   try {
     let releases = [];
     let nextPageUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/releases?per_page=${perPage}`;
