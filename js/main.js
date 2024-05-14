@@ -107,6 +107,7 @@ async function fetchReleasesData(repoOwner, repoName, perPage) {
       });
 
       if (response.data) {
+        console.log("raw releases data:");
         console.log(response);
         response.data.forEach((releaseData) => {
           releaseData.total_downloads = 0;
