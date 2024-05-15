@@ -60,18 +60,23 @@ async function generateSummary(repoOwner, repoName) {
         // general info
         summaryDiv.appendChild(getSectionTitleDiv("Releases Summary:"));
         summaryDiv.appendChild(
-          getInfoDiv(repoUrl, numberReleases, totalDownloads)
+          getGeneralInfoDiv(repoUrl, numberReleases, totalDownloads)
         );
         // latest release
         if (latestRelease) {
           summaryDiv.appendChild(getSectionTitleDiv("Latest Release:"));
-          summaryDiv.appendChild(getReleaseDiv(latestRelease));
+          summaryDiv.appendChild(getReleaseInfoDiv(latestRelease));
         }
         // latest stable release
         if (latestStableRelease) {
           summaryDiv.appendChild(getSectionTitleDiv("Latest Stable Release:"));
-          summaryDiv.appendChild(getReleaseDiv(latestStableRelease));
+          summaryDiv.appendChild(getReleaseInfoDiv(latestStableRelease));
         }
+        // all releases
+        summaryDiv.appendChild(getSectionTitleDiv("All Releases:"));
+        releases.forEach((data) => {
+          summaryDiv.appendChild(getReleaseInfoDiv(data, true));
+        });
       } else {
         summaryDiv.innerHTML = `<p>Couldn't get any release data for the provided repository.</p>`;
       }
@@ -89,27 +94,72 @@ function getSectionTitleDiv(title) {
   return div;
 }
 
-function getInfoDiv(repoUrl, numberReleases, totalDownloads) {
+function getGeneralInfoDiv(repoUrl, numberReleases, totalDownloads) {
   const div = document.createElement("div");
   div.id = "info-div";
-  div.innerHTML += "<ul>";
-  div.innerHTML += `<li>Url: <a href="${repoUrl}/releases">${repoUrl}/releases</a></li>`;
-  div.innerHTML += `<li>Number of Releases: ${numberReleases}</li>`;
-  div.innerHTML += `<li>Total Downloads: <b>${totalDownloads}</b></li>`;
-  div.innerHTML += "</ul>";
+  let innerHTML = "<div class='info-body'>";
+  innerHTML += "<ul>";
+  innerHTML += `<li>Url: <a href="${repoUrl}/releases">${repoUrl}/releases</a></li>`;
+  innerHTML += `<li>Number of Releases: ${numberReleases}</li>`;
+  innerHTML += `<li>Total Downloads: <b>${totalDownloads}</b></li>`;
+  innerHTML += "</ul>";
+  innerHTML += "</div>";
+  div.innerHTML += innerHTML;
   return div;
 }
 
-function getReleaseDiv(data) {
-  const div = document.createElement("div");
-  div.id = "info-div";
-  div.innerHTML += "<ul>";
-  div.innerHTML += `<li>Name: ${data.name}</li>`;
-  div.innerHTML += `<li>Tag: ${data.tag_name}</li>`;
-  div.innerHTML += `<li>Url: <a href="${data.html_url}">${data.html_url}</a></li>`;
-  div.innerHTML += `<li>Downloads: ${data.total_downloads}</li>`;
-  div.innerHTML += "</ul>";
-  return div;
+function getReleaseInfoDiv(data, collapsed = false) {
+  const infoDiv = document.createElement("div");
+  infoDiv.id = "info-div";
+  let innerHTML = "";
+  /////////////
+  innerHTML += `<div class="info-header">`;
+  innerHTML += `<span>${data.name}</span>`;
+  if (data.prerelease) {
+    innerHTML += `<div class="info-header-tag"><span>pre-release</span></div>`;
+  }
+  innerHTML += `<div class="info-header-button"><span class="info-header-button-text" ${
+    collapsed ? "title='expand'" : "title='collapse'"
+  }>${collapsed ? "+" : "-"}</span></div>`;
+  innerHTML += `</div>`;
+  /////////////
+  innerHTML += `<div class="info-body${collapsed ? " hidden" : ""}">`;
+  innerHTML += "<ul>";
+  let date = new Date(data.published_at);
+  innerHTML += `<li>Date: ${date.toLocaleString()}</li>`;
+  innerHTML += `<li>Tag: ${data.tag_name}</li>`;
+  innerHTML += `<li>Url: <a href="${data.html_url}">${data.html_url}</a></li>`;
+  innerHTML += `<li>Downloads: ${data.total_downloads}</li>`;
+  if (data.assets.length > 0) {
+    innerHTML += `<li>Files:`;
+    innerHTML += "<ul>";
+    data.assets.forEach((file) => {
+      innerHTML += `<li><a href="${file.browser_download_url}">${
+        file.name
+      }</a> (${(file.size / 1024 / 1024).toFixed(2)} MiB) (${
+        file.download_count
+      } downloads)</li>`;
+    });
+    innerHTML += "</ul>";
+    innerHTML += `</li>`;
+  }
+  innerHTML += "</ul>";
+  /////////////
+  innerHTML += "</div>";
+  infoDiv.innerHTML += innerHTML;
+  // button behavior
+  const headerButtonDiv = infoDiv.querySelector(".info-header-button");
+  headerButtonDiv.addEventListener("click", (event) => {
+    if (infoDiv.querySelector(".info-body").classList.contains("hidden")) {
+      infoDiv.querySelector(".info-body").classList.remove("hidden");
+      headerButtonDiv.innerHTML = `<span class="info-header-button-text" title="collapse">-</span>`;
+    } else {
+      infoDiv.querySelector(".info-body").classList.add("hidden");
+      headerButtonDiv.innerHTML = `<span class="info-header-button-text" title="expand">+</span>`;
+    }
+  });
+  /////////////
+  return infoDiv;
 }
 
 async function fetchReleasesData(repoOwner, repoName, perPage) {
