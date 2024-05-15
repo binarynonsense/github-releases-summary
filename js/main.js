@@ -110,7 +110,7 @@ function getGeneralInfoDiv(repoUrl, numberReleases, totalDownloads) {
   div.id = "info-div";
   let innerHTML = "<div class='info-body'>";
   innerHTML += "<ul>";
-  innerHTML += `<li>Url: <a href="${repoUrl}/releases">${repoUrl}/releases</a></li>`;
+  innerHTML += `<li>URL: <a href="${repoUrl}/releases">${repoUrl}/releases</a></li>`;
   innerHTML += `<li>Number of Releases: ${numberReleases}</li>`;
   if (totalDownloads >= 0)
     innerHTML += `<li>Total File Downloads: <b>${totalDownloads}</b></li>`;
@@ -140,7 +140,7 @@ function getReleaseInfoDiv(data, collapsed = false) {
   let date = new Date(data.published_at);
   innerHTML += `<li>Date: ${date.toLocaleString()}</li>`;
   innerHTML += `<li>Tag: ${data.tag_name}</li>`;
-  innerHTML += `<li>Url: <a href="${data.html_url}">${data.html_url}</a></li>`;
+  innerHTML += `<li>URL: <a href="${data.html_url}">${data.html_url}</a></li>`;
   {
     innerHTML += `<li>Source Code:`;
     innerHTML += "<ul>";
