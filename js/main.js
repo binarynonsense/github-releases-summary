@@ -113,7 +113,7 @@ function getGeneralInfoDiv(repoUrl, numberReleases, totalDownloads) {
   innerHTML += `<li>URL: <a href="${repoUrl}/releases">${repoUrl}/releases</a></li>`;
   innerHTML += `<li>Number of Releases: ${numberReleases}</li>`;
   if (totalDownloads >= 0)
-    innerHTML += `<li>File Downloads: <b>${totalDownloads}</b></li>`;
+    innerHTML += `<li>File Downloads: ${totalDownloads}</li>`;
   innerHTML += "</ul>";
   innerHTML += "</div>";
   div.innerHTML += innerHTML;
