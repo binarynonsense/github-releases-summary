@@ -104,7 +104,7 @@ function getGeneralInfoDiv(repoUrl, numberReleases, totalDownloads) {
   innerHTML += "<ul>";
   innerHTML += `<li>Url: <a href="${repoUrl}/releases">${repoUrl}/releases</a></li>`;
   innerHTML += `<li>Number of Releases: ${numberReleases}</li>`;
-  innerHTML += `<li>Total Downloads: <b>${totalDownloads}</b></li>`;
+  innerHTML += `<li>Total File Downloads: <b>${totalDownloads}</b></li>`;
   innerHTML += "</ul>";
   innerHTML += "</div>";
   div.innerHTML += innerHTML;
@@ -132,9 +132,16 @@ function getReleaseInfoDiv(data, collapsed = false) {
   innerHTML += `<li>Date: ${date.toLocaleString()}</li>`;
   innerHTML += `<li>Tag: ${data.tag_name}</li>`;
   innerHTML += `<li>Url: <a href="${data.html_url}">${data.html_url}</a></li>`;
-  innerHTML += `<li>Downloads: ${data.total_downloads}</li>`;
+  {
+    innerHTML += `<li>Source Code:`;
+    innerHTML += "<ul>";
+    innerHTML += `<li><a href="${data.zipball_url}">zip</a></li>`;
+    innerHTML += `<li><a href="${data.tarball_url}">tar.gz</a></li>`;
+    innerHTML += "</ul>";
+    innerHTML += `</li>`;
+  }
   if (data.assets.length > 0) {
-    innerHTML += `<li>Files:`;
+    innerHTML += `<li>Files (${data.total_downloads} downloads):`;
     innerHTML += "<ul>";
     data.assets.forEach((file) => {
       innerHTML += `<li><a href="${file.browser_download_url}">${
