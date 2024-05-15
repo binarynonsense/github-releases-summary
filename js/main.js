@@ -31,6 +31,7 @@ function init() {
 }
 
 async function generateSummary(repoOwner, repoName) {
+  showLoading(true);
   const summaryDiv = document.querySelector("#summary-div");
   if (!repoOwner || !repoName) {
     summaryDiv.innerHTML = `<p>Invalid owner and/or repository name</p>`;
@@ -80,7 +81,9 @@ async function generateSummary(repoOwner, repoName) {
       } else {
         summaryDiv.innerHTML = `<p>Couldn't get any release data for the provided repository.</p>`;
       }
+      showLoading(false);
     } catch (error) {
+      showLoading(false);
       summaryDiv.innerHTML = `<p>Couldn't get any data, an error occurred.</p>`;
       console.error(error);
     }
@@ -203,6 +206,14 @@ async function fetchReleasesData(repoOwner, repoName, perPage) {
     return releases;
   } catch (error) {
     return undefined;
+  }
+}
+
+function showLoading(show) {
+  if (show) {
+    document.querySelector("#loading").classList.add("is-active");
+  } else {
+    document.querySelector("#loading").classList.remove("is-active");
   }
 }
 
