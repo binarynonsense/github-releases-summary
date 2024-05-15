@@ -113,7 +113,7 @@ function getGeneralInfoDiv(repoUrl, numberReleases, totalDownloads) {
   innerHTML += `<li>URL: <a href="${repoUrl}/releases">${repoUrl}/releases</a></li>`;
   innerHTML += `<li>Number of Releases: ${numberReleases}</li>`;
   if (totalDownloads >= 0)
-    innerHTML += `<li>Total File Downloads: <b>${totalDownloads}</b></li>`;
+    innerHTML += `<li>File Downloads: <b>${totalDownloads}</b></li>`;
   innerHTML += "</ul>";
   innerHTML += "</div>";
   div.innerHTML += innerHTML;
@@ -126,7 +126,7 @@ function getReleaseInfoDiv(data, collapsed = false) {
   let innerHTML = "";
   /////////////
   innerHTML += `<div class="info-header">`;
-  innerHTML += `<span>${data.name}</span>`;
+  innerHTML += `<span><b>${data.name}</b></span>`;
   if (data.prerelease) {
     innerHTML += `<div class="info-header-tag"><span>pre-release</span></div>`;
   }
