@@ -4,18 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Github Releases Summary</title>
+    <link rel="stylesheet" href="./css/style.css" />
   </head>
   <body>
     <noscript> <p>This website requires JavaScript to work.</p></noscript>
-    <div>
-      github.com/
-      <input id="input-repo-owner" type="text" />/
-      <input id="input-repo-name" type="text" />
+    <div id="content-div">
+      <div class="section-name"><span>Repository:</span></div>
+      <div id="repo-div">
+        <div id="repo-url-div">
+          <span>github.com</span><span>/</span>
+          <input id="repo-owner-input" type="text" /><span>/</span
+          ><input id="repo-name-input" type="text" />
+        </div>
+        <div id="repo-generate-div">
+          <button id="repo-generate-button">Generate Summary</button>
+        </div>
+      </div>
+      <div id="summary-div"></div>
     </div>
-    <div>
-      <button id="button-repo-generate">Generate Summary</button>
-    </div>
-    <div id="summary"></div>
     <script src="./js/main.js" type="module"></script>
   </body>
 </html>

@@ -13,17 +13,17 @@ function init() {
   const urlParams = new URLSearchParams(window.location.search);
   const urlOwner = urlParams.get("owner");
   const urlName = urlParams.get("name");
-  if (urlOwner) document.getElementById("input-repo-owner").value = urlOwner;
-  if (urlName) document.getElementById("input-repo-name").value = urlName;
+  if (urlOwner) document.getElementById("repo-owner-input").value = urlOwner;
+  if (urlName) document.getElementById("repo-name-input").value = urlName;
   if (urlOwner && urlName) {
     generateSummary(urlOwner, urlName);
   }
 
-  const button = document.getElementById("button-repo-generate");
+  const button = document.getElementById("repo-generate-button");
   button.addEventListener("click", (event) => {
     event.preventDefault();
-    const repoOwner = document.getElementById("input-repo-owner").value;
-    const repoName = document.getElementById("input-repo-name").value;
+    const repoOwner = document.getElementById("repo-owner-input").value;
+    const repoName = document.getElementById("repo-name-input").value;
     if (repoOwner && repoName) {
       window.location.search = `?owner=${repoOwner}&name=${repoName}`;
     }
@@ -31,7 +31,7 @@ function init() {
 }
 
 async function generateSummary(repoOwner, repoName) {
-  const summaryDiv = document.querySelector("#summary");
+  const summaryDiv = document.querySelector("#summary-div");
   if (!repoOwner || !repoName) {
     summaryDiv.innerHTML = `<p>Invalid owner and/or repository name</p>`;
   } else {
@@ -57,19 +57,20 @@ async function generateSummary(repoOwner, repoName) {
           }
         });
         // build html
-        summaryDiv.innerHTML = `<h1>Releases Summary</h1>`;
-        summaryDiv.innerHTML += `<p>Url: ${repoUrl}/releases</p>`;
-        summaryDiv.innerHTML += `<p>Number of Releases: ${numberReleases}</p>`;
-        summaryDiv.innerHTML += `<p>Total Downloads: ${totalDownloads}</p>`;
+        // general info
+        summaryDiv.appendChild(getSectionTitleDiv("Releases Summary:"));
+        summaryDiv.appendChild(
+          getInfoDiv(repoUrl, numberReleases, totalDownloads)
+        );
+        // latest release
         if (latestRelease) {
-          summaryDiv.innerHTML += `<h2>"Latest Release:"</h2>`;
-          const releaseDiv = getReleaseDiv(latestRelease);
-          summaryDiv.appendChild(releaseDiv);
+          summaryDiv.appendChild(getSectionTitleDiv("Latest Release:"));
+          summaryDiv.appendChild(getReleaseDiv(latestRelease));
         }
+        // latest stable release
         if (latestStableRelease) {
-          summaryDiv.innerHTML += `<h2>"Latest Stable Release:"</h2>`;
-          const releaseDiv = getReleaseDiv(latestStableRelease);
-          summaryDiv.appendChild(releaseDiv);
+          summaryDiv.appendChild(getSectionTitleDiv("Latest Stable Release:"));
+          summaryDiv.appendChild(getReleaseDiv(latestStableRelease));
         }
       } else {
         summaryDiv.innerHTML = `<p>Couldn't get any release data for the provided repository.</p>`;
@@ -81,12 +82,33 @@ async function generateSummary(repoOwner, repoName) {
   }
 }
 
+function getSectionTitleDiv(title) {
+  const div = document.createElement("div");
+  div.className = "section-name";
+  div.innerHTML += `<span>${title}</span>`;
+  return div;
+}
+
+function getInfoDiv(repoUrl, numberReleases, totalDownloads) {
+  const div = document.createElement("div");
+  div.id = "info-div";
+  div.innerHTML += "<ul>";
+  div.innerHTML += `<li>Url: <a href="${repoUrl}/releases">${repoUrl}/releases</a></li>`;
+  div.innerHTML += `<li>Number of Releases: ${numberReleases}</li>`;
+  div.innerHTML += `<li>Total Downloads: <b>${totalDownloads}</b></li>`;
+  div.innerHTML += "</ul>";
+  return div;
+}
+
 function getReleaseDiv(data) {
   const div = document.createElement("div");
-  div.innerHTML += `<p>Url: ${data.html_url}</p>`;
-  div.innerHTML += `<p>Name: ${data.name}</p>`;
-  div.innerHTML += `<p>Tag: ${data.tag_name}</p>`;
-  div.innerHTML += `<p>Downloads: ${data.total_downloads}</p>`;
+  div.id = "info-div";
+  div.innerHTML += "<ul>";
+  div.innerHTML += `<li>Name: ${data.name}</li>`;
+  div.innerHTML += `<li>Tag: ${data.tag_name}</li>`;
+  div.innerHTML += `<li>Url: <a href="${data.html_url}">${data.html_url}</a></li>`;
+  div.innerHTML += `<li>Downloads: ${data.total_downloads}</li>`;
+  div.innerHTML += "</ul>";
   return div;
 }
 

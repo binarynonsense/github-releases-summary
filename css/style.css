@@ -1,0 +1,134 @@
+:root {
+  --bg-color: #f0f0f0;
+  --text-color: #292929;
+  --a-color: #494949;
+  --box-border: #292929;
+  --button-bg-color: #2b2b2b;
+  --button-color: #f0f0f0;
+}
+
+html {
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-color);
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text-color);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+a:link,
+a:visited,
+a:hover,
+a:active {
+  color: var(--a-color);
+}
+a:hover {
+  filter: contrast(2.2);
+}
+
+#content-div {
+  display: flex;
+  flex-direction: column;
+  width: 700px;
+  gap: 15px;
+  margin: 30px 0px;
+}
+@media all and (max-width: 700px) {
+  #content-div {
+    width: 100%;
+  }
+}
+
+.section-name {
+  display: block;
+  font-size: 20px;
+  margin: 0px;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+#repo-div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  border: var(--box-border) solid 2px;
+}
+
+#repo-generate-div {
+  width: 100%;
+}
+#repo-generate-button {
+  width: 100%;
+  padding: 10px;
+  text-transform: uppercase;
+  border: 0px solid var(--button-bg-color);
+  background-color: var(--button-bg-color);
+  color: var(--button-color);
+}
+#repo-generate-button:hover {
+  filter: contrast(1.2);
+  transform: scale(1.01);
+  cursor: pointer;
+}
+
+#repo-url-div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  flex-direction: row;
+}
+@media all and (max-width: 500px) {
+  #repo-url-div {
+    flex-direction: column;
+    align-items: baseline;
+    justify-content: center;
+  }
+  #repo-url-div input {
+    width: 100%;
+  }
+}
+
+#repo-url-div input {
+  margin: 0;
+  padding: 5px;
+  flex-grow: 1;
+}
+
+#summary-div {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+
+  padding-top: 20px;
+  /* border: var(--box-border) solid 2px; */
+}
+
+#info-div {
+  padding: 10px 20px;
+  border: var(--box-border) solid 2px;
+}
+
+#info-div li {
+  margin: 5px 0;
+}
