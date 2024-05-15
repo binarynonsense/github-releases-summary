@@ -77,7 +77,7 @@ async function generateSummary(repoOwner, repoName) {
           summaryDiv.appendChild(getReleaseInfoDiv(latestRelease));
         }
         // latest stable release
-        if (latestStableRelease) {
+        if (latestStableRelease && latestStableRelease != latestRelease) {
           summaryDiv.appendChild(getSectionTitleDiv("Latest Stable Release:"));
           summaryDiv.appendChild(getReleaseInfoDiv(latestStableRelease));
         }
