@@ -41,12 +41,16 @@ async function generateSummary(repoOwner, repoName) {
       let repoUrl = `https://github.com/${repoOwner}/${repoName}`;
       const releases = await fetchReleasesData(repoOwner, repoName, 50);
       if (releases && releases.length > 0) {
+        let hasTotalDownloads = false;
         let totalDownloads = 0;
         let numberReleases = 0;
         let latestRelease;
         let latestStableRelease;
         releases.forEach((data) => {
           numberReleases++;
+          if (data.has_total_downloads) {
+            hasTotalDownloads = true;
+          }
           totalDownloads += data.total_downloads;
           if (!latestRelease) {
             latestRelease = data;
@@ -61,7 +65,11 @@ async function generateSummary(repoOwner, repoName) {
         // general info
         summaryDiv.appendChild(getSectionTitleDiv("Releases Summary:"));
         summaryDiv.appendChild(
-          getGeneralInfoDiv(repoUrl, numberReleases, totalDownloads)
+          getGeneralInfoDiv(
+            repoUrl,
+            numberReleases,
+            hasTotalDownloads ? totalDownloads : -1
+          )
         );
         // latest release
         if (latestRelease) {
@@ -104,7 +112,8 @@ function getGeneralInfoDiv(repoUrl, numberReleases, totalDownloads) {
   innerHTML += "<ul>";
   innerHTML += `<li>Url: <a href="${repoUrl}/releases">${repoUrl}/releases</a></li>`;
   innerHTML += `<li>Number of Releases: ${numberReleases}</li>`;
-  innerHTML += `<li>Total File Downloads: <b>${totalDownloads}</b></li>`;
+  if (totalDownloads >= 0)
+    innerHTML += `<li>Total File Downloads: <b>${totalDownloads}</b></li>`;
   innerHTML += "</ul>";
   innerHTML += "</div>";
   div.innerHTML += innerHTML;
@@ -192,11 +201,14 @@ async function fetchReleasesData(repoOwner, repoName, perPage) {
         console.log("raw releases data:");
         console.log(response);
         response.data.forEach((releaseData) => {
+          releaseData.has_total_downloads = false;
           releaseData.total_downloads = 0;
           if (releaseData.assets) {
             releaseData.assets.forEach((element) => {
-              if (element.download_count)
+              if (element.download_count) {
+                releaseData.has_total_downloads = true;
                 releaseData.total_downloads += element.download_count;
+              }
             });
           }
           releases.push(releaseData);
